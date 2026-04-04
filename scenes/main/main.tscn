@@ -1,0 +1,40 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="PackedScene" uid="uid://dlr2zbln4m0o1" path="res://scenes/player/player.tscn" id="1_4h8gf"]
+[ext_resource type="Environment" path="res://scenes/environment/dark_environment.tres" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/touch_controls.tscn" id="5"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_9v2xc"]
+size = Vector3(20, 1, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+size = Vector3(20, 1, 20)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial_floor"]
+albedo_color = Color(0.2, 0.2, 0.2, 1)
+
+[node name="Main" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("2")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 10, 0)
+light_energy = 0.8
+shadow_enabled = true
+shadow_normal_bias = 0.05
+
+[node name="Floor" type="StaticBody3D" parent="."]
+transform = Transform3D(20, 0, 0, 0, 1, 0, 0, 0, 20, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("BoxShape3D_9v2xc")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("BoxMesh_floor")
+material_override = SubResource("StandardMaterial_floor")
+
+[node name="Player" parent="." instance=ExtResource("1_4h8gf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+
+[node name="TouchControls" parent="." instance=ExtResource("5")]

@@ -1,0 +1,89 @@
+; Engine configuration file.
+; Format:
+;   [section] ; section goes into []
+;   key=value ; assign values to keys
+
+[application]
+
+config/name="Horror Game 3D"
+config/description="A 3D horror game for Android"
+run/main_scene="res://scenes/main/main.tscn"
+config/features=PackedStringArray("4.3")
+config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/size/resizable=false
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
+
+[rendering]
+
+renderer/rendering_method="forward_plus"
+quality/driver/driver_name="GLES3"
+quality/filters/msaa=2
+quality/shadows/positional_shadow_atlas_size=4096
+
+[physics]
+
+common/physics_engine="GodotPhysics"
+
+[input]
+
+move_forward={
+"deadzone": 0.5,
+"events": [{"scancode": 87}, {"scancode": 4194305}]
+}
+move_back={
+"deadzone": 0.5,
+"events": [{"scancode": 83}, {"scancode": 4194306}]
+}
+move_left={
+"deadzone": 0.5,
+"events": [{"scancode": 65}, {"scancode": 4194307}]
+}
+move_right={
+"deadzone": 0.5,
+"events": [{"scancode": 68}, {"scancode": 4194308}]
+}
+jump={
+"deadzone": 0.5,
+"events": [{"scancode": 32}]
+}
+sprint={
+"deadzone": 0.5,
+"events": [{"scancode": 16777237}]
+}
+interact={
+"deadzone": 0.5,
+"events": [{"scancode": 69}]
+}
+look={
+"deadzone": 0.2,
+"events": []
+}
+
+[android]
+
+modules/export/export_format="APK"
+modules/export/apk_version_code=1
+modules/export/apk_version_name="1.0"
+modules/export/package="com.example.horrorgame3d"
+modules/export/icon="res://icon.svg"
+modules/export/screen_orientation="landscape"
+modules/export/xr_mode="regular"
+modules/export/immersive_mode=true
+modules/export/support_small_screens=true
+modules/export/support_large_screens=true
+
+[autoload]
+
+GameManager="*res://scripts/game/game_manager.gd"
+
+[groups]
+
+player="Player Character"
+enemy="Enemy Characters"
+interactable="Interactable Objects"

@@ -128,6 +128,13 @@ func _input(event):
 		camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-90), deg_to_rad(90))
 
 	if event.is_action_pressed("ui_cancel"):
+		if in_terminal_mode:
+			# Close terminal via ESC
+			var terminals = get_tree().get_nodes_in_group("terminal")
+			for t in terminals:
+				if is_instance_valid(t) and t.has_method("close_terminal"):
+					t.close_terminal()
+					return
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		else:
@@ -341,6 +348,12 @@ func _on_interact():
 	if has_key and near_exit_door:
 		_win_game()
 		return
+	if near_window_knock:
+		var puzzles = get_tree().get_nodes_in_group("color_puzzle")
+		for p in puzzles:
+			if is_instance_valid(p) and p.has_method("do_knock") and p.can_knock():
+				p.do_knock()
+				return
 	if near_color_puzzle:
 		_interact_color_puzzle()
 		return
@@ -408,6 +421,16 @@ func _check_door_proximity():
 				near_exit_door = true
 				return
 
+func _check_window_knock_proximity():
+	var areas = get_tree().get_nodes_in_group("window_knock")
+	near_window_knock = false
+	for a in areas:
+		if is_instance_valid(a):
+			var dist = global_position.distance_to(a.global_position)
+			if dist < 2.0:
+				near_window_knock = true
+				return
+
 func _check_color_puzzle_proximity():
 	var puzzles = get_tree().get_nodes_in_group("color_puzzle")
 	near_color_puzzle = false
@@ -460,6 +483,17 @@ func reward_battery(amount: float):
 	print("[REWARD] +%.0f%% battery for surviving!" % amount)
 
 func _physics_process(delta):
+	# Safety: force-exit terminal mode if stuck
+	if in_terminal_mode:
+		var any_open = false
+		var terminals = get_tree().get_nodes_in_group("terminal")
+		for t in terminals:
+			if is_instance_valid(t) and t.has_method("is_terminal_active") and t.is_terminal_active():
+				any_open = true
+				break
+		if not any_open:
+			in_terminal_mode = false
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	if is_hiding or in_terminal_mode:
 		velocity = Vector3.ZERO
 		move_and_slide()

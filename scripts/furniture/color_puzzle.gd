@@ -8,7 +8,6 @@ var target_sequence: Array = []
 var current_sequence: Array = [GlassColor.RED, GlassColor.RED, GlassColor.RED]
 var is_solved: bool = false
 var target_indicators: Array = []
-var glass_flash_tweens: Array = [null, null, null]
 
 # Key hunt
 var key_pickup_node: Area3D = null
@@ -18,6 +17,7 @@ var timer_label: Label3D = null
 var hunt_timer: float = 0.0
 var hunt_active: bool = false
 var key_collected: bool = false
+var quest_phase: int = 0  # 0=waiting, 1=solved_need_knock, 2=key_hunt, 3=done
 
 const KEY_SPAWN_POSITIONS = [
 	Vector3(-2, 1.2, 3),
@@ -76,7 +76,6 @@ func _setup_tv():
 		print("[COLOR PUZZLE] TV not found")
 		return
 
-	# Target label
 	var label = Label3D.new()
 	label.name = "PuzzleTargetLabel"
 	label.text = "ЦЕЛЬ:"
@@ -87,7 +86,6 @@ func _setup_tv():
 	label.position = Vector3(-0.015, 0.55, 0)
 	tv_screen.add_child(label)
 
-	# Target color indicators
 	for i in range(3):
 		var mesh = MeshInstance3D.new()
 		mesh.name = "TargetIndicator" + str(i)
@@ -104,7 +102,6 @@ func _setup_tv():
 		tv_screen.add_child(mesh)
 		target_indicators.append(mesh)
 
-	# Hunt timer label (hidden initially)
 	timer_label = Label3D.new()
 	timer_label.name = "HuntTimerLabel"
 	timer_label.font_size = 8
@@ -115,13 +112,12 @@ func _setup_tv():
 	timer_label.visible = false
 	tv_screen.add_child(timer_label)
 
-	# Hunt countdown label (created on demand)
 	hunt_label = Label3D.new()
 	hunt_label.name = "HuntCountdownLabel"
 	hunt_label.outline_enabled = true
 	hunt_label.outline_modulate = Color(0, 0, 0, 1)
 	hunt_label.modulate = Color(1, 0.2, 0.05, 1)
-	hunt_label.position = Vector3(-0.015, 0.2, 0)
+	hunt_label.position = Vector3(-0.015, 0.15, 0)
 	hunt_label.visible = false
 	tv_screen.add_child(hunt_label)
 
@@ -177,6 +173,7 @@ func _on_key_pickup(body: Node):
 
 	key_collected = true
 	hunt_active = false
+	quest_phase = 3
 	key_pickup_node.visible = false
 	key_pickup_node.process_mode = Node.PROCESS_MODE_DISABLED
 
@@ -187,6 +184,38 @@ func _on_key_pickup(body: Node):
 	if timer_label:
 		timer_label.visible = false
 	print("[KEY HUNT] Key collected! Go to exit door!")
+
+# === KNOCK PHASE ===
+
+func _start_knock_phase():
+	quest_phase = 1
+	print("[QUEST] Phase 1: color solved! Knock on the window!")
+	_set_tv_label_text("СТУКНИ\nВ ОКНО!", 12)
+
+	var root = get_tree().current_scene
+	var window = root.find_child("Window", true, false)
+	if window:
+		var knock = window.find_child("KnockSound", true, false)
+		if knock and knock is AudioStreamPlayer3D:
+			knock.play()
+
+func can_knock() -> bool:
+	return quest_phase == 1
+
+func do_knock():
+	if quest_phase != 1:
+		return
+	print("[QUEST] Player knocked! Phase 2: key hunt!")
+	quest_phase = 2
+
+	var root = get_tree().current_scene
+	var window = root.find_child("Window", true, false)
+	if window:
+		var knock = window.find_child("KnockSound", true, false)
+		if knock and knock is AudioStreamPlayer3D:
+			knock.play()
+
+	_start_key_hunt()
 
 # === KEY HUNT ===
 
@@ -295,31 +324,7 @@ func cycle_color(glass_idx: int):
 		return
 	current_sequence[glass_idx] = (current_sequence[glass_idx] + 1) % 4
 	_update_visuals()
-	# Flash green if this glass matches target
-	if current_sequence[glass_idx] == target_sequence[glass_idx]:
-		_flash_glass_green(glass_idx)
 	_check_solution()
-
-func _flash_glass_green(glass_idx: int):
-	var mat = _get_liquid_mat(glass_idx)
-	var t_mat = _get_liquid_top_mat(glass_idx)
-	if not mat or not t_mat:
-		return
-	# Kill previous tween for this glass
-	if glass_flash_tweens[glass_idx] and glass_flash_tweens[glass_idx].is_valid():
-		glass_flash_tweens[glass_idx].kill()
-	# Flash green: set emission to green, tween back to normal
-	var green = Color(0, 1.5, 0)
-	mat.emission = green
-	t_mat.emission = green
-	mat.emission_energy_multiplier = 3.0
-	t_mat.emission_energy_multiplier = 3.0
-	var tween = create_tween().set_parallel(true)
-	tween.tween_property(mat, "emission", Color(0, 0, 0), 0.4).set_ease(Tween.EASE_OUT)
-	tween.tween_property(mat, "emission_energy_multiplier", 1.5, 0.4).set_ease(Tween.EASE_OUT)
-	tween.tween_property(t_mat, "emission", Color(0, 0, 0), 0.4).set_ease(Tween.EASE_OUT)
-	tween.tween_property(t_mat, "emission_energy_multiplier", 1.5, 0.4).set_ease(Tween.EASE_OUT)
-	glass_flash_tweens[glass_idx] = tween
 
 func _check_solution():
 	for i in range(3):
@@ -335,7 +340,8 @@ func _check_solution():
 	_update_target_display()
 	puzzle_solved.emit()
 
-	_start_key_hunt()
+	# Phase 1: knock on the window
+	_start_knock_phase()
 
 func _on_body_entered(body):
 	if body.is_in_group("player"):

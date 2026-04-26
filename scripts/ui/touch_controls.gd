@@ -139,20 +139,32 @@ func _on_crouch_pressed():
 
 func _style_buttons():
 	for btn in [flashlight_button, interact_button, jump_button, crouch_button]:
+		# Normal state - dark circle with subtle border
 		var normal = StyleBoxFlat.new()
-		normal.bg_color = Color(1, 1, 1, 0.12)
+		normal.bg_color = Color(0, 0, 0, 0.35)
 		normal.set_corner_radius_all(50)
-		normal.border_width_bottom = 0
-		normal.border_width_top = 0
-		normal.border_width_left = 0
-		normal.border_width_right = 0
+		normal.border_width_all = 2
+		normal.border_color = Color(1, 1, 1, 0.15)
 
+		# Hover state - slightly brighter
+		var hover = StyleBoxFlat.new()
+		hover.bg_color = Color(0, 0, 0, 0.45)
+		hover.set_corner_radius_all(50)
+		hover.border_width_all = 2
+		hover.border_color = Color(1, 1, 1, 0.25)
+
+		# Pressed state - light background
 		var pressed = StyleBoxFlat.new()
-		pressed.bg_color = Color(1, 1, 1, 0.3)
+		pressed.bg_color = Color(1, 1, 1, 0.25)
 		pressed.set_corner_radius_all(50)
+		pressed.border_width_all = 2
+		pressed.border_color = Color(1, 1, 1, 0.4)
 
 		btn.add_theme_stylebox_override("normal", normal)
-		btn.add_theme_stylebox_override("hover", normal)
+		btn.add_theme_stylebox_override("hover", hover)
 		btn.add_theme_stylebox_override("pressed", pressed)
-		btn.add_theme_font_size_override("font_size", 26)
-		btn.add_theme_color_override("font_color", Color(1, 1, 1, 0.85))
+		btn.add_theme_font_size_override("font_size", 30)
+		btn.add_theme_color_override("font_color", Color(1, 1, 1, 0.9))
+		btn.add_theme_color_override("font_pressed_color", Color(0, 0, 0, 0.7))
+		btn.add_theme_constant_override("outline_size", 2)
+		btn.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.5))

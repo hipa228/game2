@@ -19,7 +19,6 @@ var original_energy: float
 
 # Phase 1: Color sequence
 var color_sequence: Array = []
-var sequence_generated: bool = false
 var player_input: Array = []
 var input_index: int = 0
 var is_playing: bool = false
@@ -33,11 +32,6 @@ var knock_count_to_guess: int = 0
 var phase2_number_input: int = 0
 var phase2_solved: bool = false
 var knocks_played: bool = false
-
-# Auto-play: sequence shows on TV every ~15s
-var auto_timer: float = 5.0
-@export var auto_interval_min: float = 12.0
-@export var auto_interval_max: float = 25.0
 
 var terminal_ui_scene: PackedScene
 var terminal_ui_instance: Node = null
@@ -60,29 +54,17 @@ func _ready():
 	terminal_ui_scene = preload("res://scenes/ui/terminal_ui.tscn")
 
 func _process(delta):
-	if is_solved_phase1:
-		return
-	auto_timer -= delta
-	if auto_timer <= 0 and not is_playing:
-		_auto_play()
-
-func _auto_play():
-	generate_sequence()
-	is_playing = true
-	_show_sequence_step(0)
-	auto_timer = randf_range(auto_interval_min, auto_interval_max)
+	pass
 
 func generate_sequence():
 	color_sequence.clear()
 	for i in range(sequence_length):
 		color_sequence.append(randi() % 4)
-	sequence_generated = true
 
 func play_sequence():
 	if is_playing:
 		return
-	if not sequence_generated:
-		generate_sequence()
+	generate_sequence()
 	is_playing = true
 	sequence_started.emit()
 	_show_sequence_step(0)

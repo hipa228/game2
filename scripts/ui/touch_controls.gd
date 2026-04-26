@@ -46,10 +46,10 @@ func _ready():
 	joystick_handle.color = joystick_default_color
 
 func _is_on_button(touch_pos: Vector2) -> bool:
-	return flashlight_button.get_global_rect().has_point(touch_pos) \
-		or interact_button.get_global_rect().has_point(touch_pos) \
+	return (flashlight_button.get_global_rect().has_point(touch_pos)
+		or interact_button.get_global_rect().has_point(touch_pos)
 		or jump_button.get_global_rect().has_point(touch_pos)
-	or crouch_button.get_global_rect().has_point(touch_pos)
+		or crouch_button.get_global_rect().has_point(touch_pos))
 
 func _input(event):
 	if event is InputEventScreenTouch:

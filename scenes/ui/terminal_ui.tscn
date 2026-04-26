@@ -116,6 +116,47 @@ theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
 text = ""
 
+[node name="Phase2Panel" type="HBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+alignment = 1
+visible = false
+
+[node name="NumMinus" type="Button" parent="Panel/VBox/Phase2Panel"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(1, 0.3, 0.3, 1)
+text = "−"
+
+[node name="NumberDisplay" type="Label" parent="Panel/VBox/Phase2Panel"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 48
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "1"
+
+[node name="NumPlus" type="Button" parent="Panel/VBox/Phase2Panel"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.3, 1, 0.3, 1)
+text = "+"
+
+[node name="NumSubmit" type="Button" parent="Panel/VBox/Phase2Panel"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.4, 0.8, 1, 1)
+text = "Подтвердить"
+
 [node name="CloseButton" type="Button" parent="Panel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2

@@ -60,13 +60,11 @@ func _update_visuals():
 		if mat:
 			mat.albedo_color = color_val
 			if mat is StandardMaterial3D:
-				mat.emission_enabled = true
 				mat.emission = color_val * 0.6
-				mat.emission_energy = 1.5
+				mat.emission_energy_multiplier = 1.5
 		var top_mat = _get_liquid_top_mat(i)
 		if top_mat:
 			top_mat.albedo_color = color_val * 0.9
-			top_mat.emission_enabled = true
 			top_mat.emission = color_val * 0.5
 
 		var label: Label3D = glass_nodes[i].get_node("ColorLabel")

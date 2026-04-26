@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/furniture/terminal.gd" id="1"]
 
@@ -9,19 +9,20 @@ size = Vector3(0.6, 0.12, 0.5)
 size = Vector3(0.6, 0.12, 0.5)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial_body"]
-albedo_color = Color(0.12, 0.12, 0.12, 1)
-roughness = 0.4
-metallic = 0.7
+albedo_color = Color(0.08, 0.08, 0.08, 1)
+roughness = 0.2
+metallic = 0.85
 
 [sub_resource type="BoxMesh" id="BoxMesh_screen"]
-size = Vector3(0.55, 0.35, 0.02)
+size = Vector3(0.4, 0.25, 0.02)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial_screen"]
-albedo_color = Color(0.02, 0.02, 0.06, 1)
-roughness = 0.1
+albedo_color = Color(0.01, 0.01, 0.04, 1)
+roughness = 0.05
+metallic = 0.1
 emission_enabled = true
-emission = Color(0.04, 0.06, 0.12, 1)
-emission_energy = 0.3
+emission = Color(0.06, 0.1, 0.25, 1)
+emission_energy = 1.0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_interact"]
 size = Vector3(1.2, 0.8, 1.0)
@@ -33,8 +34,46 @@ size = Vector3(0.3, 0.25, 0.3)
 size = Vector3(0.3, 0.25, 0.3)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial_stand"]
-albedo_color = Color(0.15, 0.15, 0.15, 1)
-roughness = 0.5
+albedo_color = Color(0.12, 0.12, 0.12, 1)
+roughness = 0.3
+metallic = 0.6
+
+[sub_resource type="BoxMesh" id="BoxMesh_bezel"]
+size = Vector3(0.46, 0.31, 0.015)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial_bezel"]
+albedo_color = Color(0.03, 0.03, 0.03, 1)
+roughness = 0.15
+metallic = 0.9
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_led"]
+top_radius = 0.012
+bottom_radius = 0.012
+height = 0.01
+radial_segments = 8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial_led_green"]
+albedo_color = Color(0.0, 0.6, 0.1, 1)
+roughness = 0.2
+metallic = 0.3
+emission_enabled = true
+emission = Color(0.0, 0.8, 0.15, 1)
+emission_energy = 3.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial_led_red"]
+albedo_color = Color(0.6, 0.0, 0.0, 1)
+roughness = 0.2
+metallic = 0.3
+emission_enabled = true
+emission = Color(0.8, 0.0, 0.0, 1)
+emission_energy = 2.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_keyboard"]
+size = Vector3(0.3, 0.02, 0.12)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial_keyboard"]
+albedo_color = Color(0.06, 0.06, 0.06, 1)
+roughness = 0.4
 metallic = 0.3
 
 [node name="Terminal" type="StaticBody3D" groups=["terminal"]]
@@ -47,15 +86,35 @@ shape = SubResource("BoxShape3D_body")
 mesh = SubResource("BoxMesh_body")
 material_override = SubResource("StandardMaterial_body")
 
+[node name="Bezel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.235, -0.26)
+mesh = SubResource("BoxMesh_bezel")
+material_override = SubResource("StandardMaterial_bezel")
+
+[node name="Screen" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.235, -0.258)
+mesh = SubResource("BoxMesh_screen")
+material_override = SubResource("StandardMaterial_screen")
+
+[node name="Keyboard" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, -0.08)
+mesh = SubResource("BoxMesh_keyboard")
+material_override = SubResource("StandardMaterial_keyboard")
+
+[node name="LedGreen" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, 0.06, -0.26)
+mesh = SubResource("CylinderMesh_led")
+material_override = SubResource("StandardMaterial_led_green")
+
+[node name="LedRed" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 0.06, -0.26)
+mesh = SubResource("CylinderMesh_led")
+material_override = SubResource("StandardMaterial_led_red")
+
 [node name="Stand" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.185, -0.1)
 mesh = SubResource("BoxMesh_stand")
 material_override = SubResource("StandardMaterial_stand")
-
-[node name="Screen" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.235, -0.26)
-mesh = SubResource("BoxMesh_screen")
-material_override = SubResource("StandardMaterial_screen")
 
 [node name="InteractArea" type="Area3D" parent="." groups=["terminal_interact"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=24 format=3]
 
 [ext_resource type="Script" path="res://scripts/furniture/color_puzzle.gd" id="1"]
 
@@ -9,16 +9,17 @@ size = Vector3(1.2, 0.7, 0.5)
 size = Vector3(1.2, 0.06, 0.5)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial_wood"]
-albedo_color = Color(0.25, 0.18, 0.1, 1)
-roughness = 0.85
+albedo_color = Color(0.2, 0.14, 0.07, 1)
+roughness = 0.65
+metallic = 0.05
 
 [sub_resource type="BoxMesh" id="BoxMesh_table_leg"]
 size = Vector3(0.06, 0.6, 0.06)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial_metal"]
-albedo_color = Color(0.08, 0.08, 0.08, 1)
-roughness = 0.3
-metallic = 0.8
+albedo_color = Color(0.06, 0.06, 0.06, 1)
+roughness = 0.2
+metallic = 0.9
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_glass"]
 top_radius = 0.06
@@ -27,8 +28,8 @@ height = 0.15
 radial_segments = 12
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial_glass"]
-albedo_color = Color(0.9, 0.95, 1.0, 0.15)
-roughness = 0.02
+albedo_color = Color(0.85, 0.9, 1.0, 0.08)
+roughness = 0.01
 metallic = 0.0
 transparency = 1
 
@@ -43,6 +44,46 @@ top_radius = 0.05
 bottom_radius = 0.05
 height = 0.005
 radial_segments = 12
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial_liquid_red"]
+albedo_color = Color(0.8, 0.05, 0.05, 1)
+roughness = 0.1
+metallic = 0.2
+emission_enabled = true
+emission = Color(0.9, 0.1, 0.1, 1)
+emission_energy = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial_liquid_green"]
+albedo_color = Color(0.05, 0.8, 0.05, 1)
+roughness = 0.1
+metallic = 0.2
+emission_enabled = true
+emission = Color(0.1, 0.9, 0.1, 1)
+emission_energy = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial_liquid_blue"]
+albedo_color = Color(0.05, 0.05, 0.8, 1)
+roughness = 0.1
+metallic = 0.2
+emission_enabled = true
+emission = Color(0.1, 0.1, 0.9, 1)
+emission_energy = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial_liquid_yellow"]
+albedo_color = Color(0.8, 0.7, 0.05, 1)
+roughness = 0.1
+metallic = 0.2
+emission_enabled = true
+emission = Color(0.9, 0.8, 0.1, 1)
+emission_energy = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial_liquid_purple"]
+albedo_color = Color(0.6, 0.05, 0.6, 1)
+roughness = 0.1
+metallic = 0.2
+emission_enabled = true
+emission = Color(0.7, 0.1, 0.7, 1)
+emission_energy = 0.5
 
 [node name="ColorPuzzle" type="StaticBody3D" groups=["color_puzzle"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
@@ -77,6 +118,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, -0.01, 0.2)
 mesh = SubResource("BoxMesh_table_leg")
 material_override = SubResource("StandardMaterial_metal")
 
+[node name="GlowLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+light_energy = 0.15
+light_color = Color(0.3, 0.1, 0.3, 1)
+shadow_enabled = false
+omni_range = 1.5
+
 [node name="Glass1" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0.38, 0)
 
@@ -87,12 +135,12 @@ material_override = SubResource("StandardMaterial_glass")
 [node name="Liquid" type="MeshInstance3D" parent="Glass1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
 mesh = SubResource("CylinderMesh_liquid")
-material_override = SubResource("StandardMaterial_wood")
+material_override = SubResource("StandardMaterial_liquid_red")
 
 [node name="LiquidTop" type="MeshInstance3D" parent="Glass1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
 mesh = SubResource("CylinderMesh_liquid_top")
-material_override = SubResource("StandardMaterial_wood")
+material_override = SubResource("StandardMaterial_liquid_red")
 
 [node name="ColorLabel" type="Label3D" parent="Glass1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
@@ -100,7 +148,7 @@ text = "Красный"
 font_size = 10
 outline_modulate = Color(0, 0, 0, 0.8)
 outline_enabled = true
-modulate = Color(1, 1, 1, 0.9)
+modulate = Color(1, 0.3, 0.3, 0.9)
 
 [node name="Glass2" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.38, 0)
@@ -112,12 +160,12 @@ material_override = SubResource("StandardMaterial_glass")
 [node name="Liquid" type="MeshInstance3D" parent="Glass2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
 mesh = SubResource("CylinderMesh_liquid")
-material_override = SubResource("StandardMaterial_wood")
+material_override = SubResource("StandardMaterial_liquid_red")
 
 [node name="LiquidTop" type="MeshInstance3D" parent="Glass2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
 mesh = SubResource("CylinderMesh_liquid_top")
-material_override = SubResource("StandardMaterial_wood")
+material_override = SubResource("StandardMaterial_liquid_red")
 
 [node name="ColorLabel" type="Label3D" parent="Glass2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
@@ -125,7 +173,7 @@ text = "Красный"
 font_size = 10
 outline_modulate = Color(0, 0, 0, 0.8)
 outline_enabled = true
-modulate = Color(1, 1, 1, 0.9)
+modulate = Color(1, 0.3, 0.3, 0.9)
 
 [node name="Glass3" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.38, 0)
@@ -137,12 +185,12 @@ material_override = SubResource("StandardMaterial_glass")
 [node name="Liquid" type="MeshInstance3D" parent="Glass3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
 mesh = SubResource("CylinderMesh_liquid")
-material_override = SubResource("StandardMaterial_wood")
+material_override = SubResource("StandardMaterial_liquid_red")
 
 [node name="LiquidTop" type="MeshInstance3D" parent="Glass3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
 mesh = SubResource("CylinderMesh_liquid_top")
-material_override = SubResource("StandardMaterial_wood")
+material_override = SubResource("StandardMaterial_liquid_red")
 
 [node name="ColorLabel" type="Label3D" parent="Glass3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
@@ -150,7 +198,7 @@ text = "Красный"
 font_size = 10
 outline_modulate = Color(0, 0, 0, 0.8)
 outline_enabled = true
-modulate = Color(1, 1, 1, 0.9)
+modulate = Color(1, 0.3, 0.3, 0.9)
 
 [node name="StatusLabel" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)

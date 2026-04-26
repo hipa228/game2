@@ -31,6 +31,14 @@ var knock_index = 0
 var scared_this_event := false
 var screen_overlay: ColorRect = null
 
+# Puzzle knock system
+var is_puzzle_knocking: bool = false
+var puzzle_knock_count: int = 0
+var puzzle_knock_index: int = 0
+var puzzle_knock_timer: float = 0.0
+var puzzle_knocks_done: bool = false
+var puzzle_knock_callback: Callable = Callable()
+
 func _ready():
 	next_event_time = randf_range(8.0, 15.0)
 
@@ -38,6 +46,22 @@ func _process(delta):
 	# Pause horror events while player is using terminal
 	if player and player.in_terminal_mode:
 		return
+
+	# Puzzle knock sequence
+	if is_puzzle_knocking:
+		puzzle_knock_timer -= delta
+		if puzzle_knock_timer <= 0 and puzzle_knock_index < puzzle_knock_count:
+			do_single_knock()
+			puzzle_knock_index += 1
+			if puzzle_knock_index >= puzzle_knock_count:
+				is_puzzle_knocking = false
+				puzzle_knocks_done = true
+				if puzzle_knock_callback.is_valid():
+					puzzle_knock_callback.call()
+			else:
+				puzzle_knock_timer = randf_range(0.8, 1.5)
+		return
+
 	if event_active:
 		event_timer -= delta
 
@@ -140,6 +164,18 @@ func end_event():
 			print("[EVENT] +15% battery for surviving!")
 
 	next_event_time = randf_range(5.0, 12.0)
+
+func play_puzzle_knocks(count: int, callback: Callable = Callable()):
+	is_puzzle_knocking = true
+	puzzle_knock_count = count
+	puzzle_knock_index = 0
+	puzzle_knock_timer = 0.5  # first knock after short delay
+	puzzle_knocks_done = false
+	puzzle_knock_callback = callback
+	print("[PUZZLE] Puzzle knock sequence started: %d knocks" % count)
+	next_event_time = 9999.0  # pause regular horror events
+	if event_active:
+		end_event()
 
 func do_jumpscare():
 	scared_this_event = true

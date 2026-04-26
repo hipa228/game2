@@ -4,8 +4,8 @@ res://scenes/player/player.tscn::3d3c11b07b16fee7594d4e4dc1f918d6::1777196079::r
 res://scenes/ui/win_screen.tscn::3ef7289e6c27b477e33c54d7ff40b378::1777144342::res://.godot/exported/133200997/export-5aea99a1428ce88fb5191cbe4a892a96-win_screen.scn
 res://scenes/ui/main_menu.tscn::7099c7090252dd6e6a69b51133a870d5::1777194570::res://.godot/exported/133200997/export-79dd3ab530fc0aed4f9ba21f09ab2efd-main_menu.scn
 res://scenes/environment/menu_environment.tres::93c2f9587a3c4c141f45638319347747::1777145028::res://.godot/exported/133200997/export-cad5865a020c9fdeee1191976ffac216-menu_environment.res
-res://scenes/ui/terminal_ui.tscn::52aa1e43c731f62869f668da586f80bc::1777195667::res://.godot/exported/133200997/export-230ab82748c456c1b66ad609dd75c1d6-terminal_ui.scn
-res://scenes/main/main.tscn::bcd1e5c3acd8c85b162e460dda6d359e::1777196308::res://.godot/exported/133200997/export-f39996a6d27a38698d16421ab974097b-main.scn
-res://scenes/furniture/terminal.tscn::9dc3f898b9a0d8b1e8d7bd0658265993::1777194758::res://.godot/exported/133200997/export-de874ad340904558ef1388ab3ed7e9f7-terminal.scn
-res://scenes/ui/menu_3d.tscn::2f801ee4f00e07541c31e159651173d1::1777195433::res://.godot/exported/133200997/export-aa3b80cdaad37eee8228595950067335-menu_3d.scn
-res://scenes/furniture/color_puzzle.tscn::ce001a067518d63744cbb8f3a5c9a8d0::1777196296::res://.godot/exported/133200997/export-c5429e53cdabf297c7c3c801a682a705-color_puzzle.scn
+res://scenes/ui/terminal_ui.tscn::0871d383035d69e7446a383b896a0aad::1777197369::res://.godot/exported/133200997/export-230ab82748c456c1b66ad609dd75c1d6-terminal_ui.scn
+res://scenes/main/main.tscn::9c45016ba25e0094221eff3efa2ab97d::1777197501::res://.godot/exported/133200997/export-f39996a6d27a38698d16421ab974097b-main.scn
+res://scenes/furniture/terminal.tscn::b4b8629f9c4333658fc210d46271e2d0::1777197174::res://.godot/exported/133200997/export-de874ad340904558ef1388ab3ed7e9f7-terminal.scn
+res://scenes/ui/menu_3d.tscn::7b1c736adc76ca6cb3b1d3661f8431ed::1777197083::res://.godot/exported/133200997/export-aa3b80cdaad37eee8228595950067335-menu_3d.scn
+res://scenes/furniture/color_puzzle.tscn::996b3e3fc422a17b0302321252b37d5a::1777197216::res://.godot/exported/133200997/export-c5429e53cdabf297c7c3c801a682a705-color_puzzle.scn

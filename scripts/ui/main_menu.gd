@@ -1,15 +1,15 @@
 extends Control
 
-@onready var start_btn: Button = $StartButton
-@onready var settings_btn: Button = $SettingsButton
-@onready var quit_btn: Button = $QuitButton
-@onready var title_label: Label = $Title
-@onready var subtitle_label: Label = $Subtitle
-@onready var version_label: Label = $VersionLabel
+@onready var start_btn: Button = $MenuItems/StartButton
+@onready var settings_btn: Button = $MenuItems/SettingsButton
+@onready var quit_btn: Button = $MenuItems/QuitButton
+@onready var title_label: Label = $MenuItems/Title
+@onready var subtitle_label: Label = $MenuItems/Subtitle
+@onready var version_label: Label = $MenuItems/VersionLabel
 @onready var settings_panel: Control = $SettingsPanel
-@onready var sens_slider: HSlider = $SettingsPanel/SensSlider
-@onready var sens_label: Label = $SettingsPanel/SensValue
-@onready var close_settings_btn: Button = $SettingsPanel/BackButton
+@onready var sens_slider: HSlider = $SettingsPanel/Panel/SensSlider
+@onready var sens_label: Label = $SettingsPanel/Panel/SensValue
+@onready var close_settings_btn: Button = $SettingsPanel/Panel/BackButton
 @onready var menu_items: Control = $MenuItems
 @onready var fade_overlay: ColorRect = $FadeOverlay
 

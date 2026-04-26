@@ -17,14 +17,22 @@ var tv_material: Material
 var original_emission: Color
 var original_energy: float
 
+# Phase 1: Color sequence
 var color_sequence: Array = []
 var sequence_generated: bool = false
 var player_input: Array = []
 var input_index: int = 0
 var is_playing: bool = false
-var is_solved: bool = false
+var is_solved_phase1: bool = false
 var is_open: bool = false
 var player_ref: Node = null
+
+# Phase 2: Knock count
+var is_phase2: bool = false
+var knock_count_to_guess: int = 0
+var phase2_number_input: int = 0
+var phase2_solved: bool = false
+var knocks_played: bool = false
 
 # Auto-play: sequence shows on TV every ~15s
 var auto_timer: float = 5.0
@@ -39,6 +47,10 @@ signal sequence_started()
 signal sequence_ended()
 signal input_accepted(index: int)
 signal input_rejected()
+signal phase2_started()
+signal knocks_started()
+signal knocks_finished()
+signal phase2_solved_signal()
 
 func _ready():
 	tv_screen = get_node(tv_screen_path)
@@ -48,7 +60,7 @@ func _ready():
 	terminal_ui_scene = preload("res://scenes/ui/terminal_ui.tscn")
 
 func _process(delta):
-	if is_solved:
+	if is_solved_phase1:
 		return
 	auto_timer -= delta
 	if auto_timer <= 0 and not is_playing:
@@ -106,7 +118,7 @@ func _show_sequence_step(index: int):
 	_show_sequence_step(index + 1)
 
 func check_input(color_idx: int) -> bool:
-	if is_playing or is_solved or not is_open:
+	if is_playing or is_solved_phase1 or not is_open:
 		return false
 	if input_index >= color_sequence.size():
 		return false
@@ -117,7 +129,7 @@ func check_input(color_idx: int) -> bool:
 		input_accepted.emit(input_index)
 
 		if input_index >= color_sequence.size():
-			_solve_puzzle()
+			_solve_phase1()
 		return true
 	else:
 		input_rejected.emit()
@@ -126,14 +138,57 @@ func check_input(color_idx: int) -> bool:
 		input_index = 0
 		return false
 
-func _solve_puzzle():
-	is_solved = true
+func _solve_phase1():
+	is_solved_phase1 = true
 	puzzle_solved.emit()
 	_flash_tv(Color(0, 1, 0))
-	if player_ref and is_instance_valid(player_ref) and player_ref.has_method(&"set_has_key"):
-		player_ref.set_has_key(true)
 	await get_tree().create_timer(1.5).timeout
 	close_terminal()
+	_start_phase2()
+
+func _start_phase2():
+	is_phase2 = true
+	knock_count_to_guess = randi_range(3, 8)
+	print("[PUZZLE] Phase 2: %d knocks" % knock_count_to_guess)
+	phase2_started.emit()
+
+	# Find horror_events and trigger puzzle knocks
+	await get_tree().create_timer(2.0).timeout
+	var horror_events = get_node_or_null("../HorrorEvents")
+	if horror_events and horror_events.has_method("play_puzzle_knocks"):
+		knocks_started.emit()
+		# Flash TV to signal knocks are coming
+		if is_instance_valid(tv_material):
+			tv_material.emission = Color(0.4, 0.2, 0.0)
+			tv_material.emission_energy = 5.0
+			await get_tree().create_timer(0.5).timeout
+			_restore_tv()
+		horror_events.play_puzzle_knocks(knock_count_to_guess, _on_puzzle_knocks_done)
+	else:
+		# Fallback: no horror_events found, just mark done
+		knocks_played = true
+		knocks_finished.emit()
+
+func _on_puzzle_knocks_done():
+	knocks_played = true
+	knocks_finished.emit()
+	print("[PUZZLE] Puzzle knocks finished! Player can now input count at terminal.")
+
+func check_number_input(number: int) -> bool:
+	if not is_open or not is_phase2 or not knocks_played:
+		return false
+	if number == knock_count_to_guess:
+		phase2_solved = true
+		phase2_solved_signal.emit()
+		_flash_tv(Color(0, 1, 0))
+		if player_ref and is_instance_valid(player_ref) and player_ref.has_method(&"set_has_key"):
+			player_ref.set_has_key(true)
+		print("[PUZZLE] Phase 2 solved! Key activated!")
+		return true
+	else:
+		_flash_tv(Color(1, 0, 0))
+		print("[PUZZLE] Wrong guess: %d (correct was %d)" % [number, knock_count_to_guess])
+		return false
 
 func _flash_tv(color: Color):
 	if not is_inside_tree():
@@ -146,11 +201,12 @@ func _flash_tv(color: Color):
 	_restore_tv()
 
 func _restore_tv():
-	tv_material.emission = original_emission
-	tv_material.emission_energy = original_energy
+	if is_instance_valid(tv_material):
+		tv_material.emission = original_emission
+		tv_material.emission_energy = original_energy
 
 func open_terminal(player: Node):
-	if is_solved:
+	if phase2_solved:
 		return
 	is_open = true
 	player_ref = player
@@ -165,7 +221,12 @@ func open_terminal(player: Node):
 		if terminal_ui_instance.has_method(&"connect_terminal"):
 			terminal_ui_instance.connect_terminal(self)
 
-	# Show sequence on TV immediately when terminal opens
+	# Phase 2: show number input screen
+	if is_phase2:
+		terminal_ui_instance.set_phase2_mode(knocks_played, knock_count_to_guess)
+		return
+
+	# Phase 1: show color sequence
 	play_sequence()
 
 func close_terminal():
@@ -185,3 +246,15 @@ func close_terminal():
 
 func is_terminal_active() -> bool:
 	return is_open
+
+func get_knock_count() -> int:
+	return knock_count_to_guess
+
+func is_phase2_active() -> bool:
+	return is_phase2
+
+func are_knocks_done() -> bool:
+	return knocks_played
+
+func is_fully_solved() -> bool:
+	return phase2_solved

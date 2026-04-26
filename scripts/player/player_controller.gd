@@ -69,6 +69,7 @@ var near_wardrobe : bool = false
 var near_terminal: bool = false
 var near_exit_door: bool = false
 var near_color_puzzle: bool = false
+var near_window_knock: bool = false
 var in_terminal_mode: bool = false
 
 # Furniture search cooldowns (node path -> seconds remaining)
@@ -161,6 +162,7 @@ func _process(delta):
 	_check_terminal_proximity()
 	_check_color_puzzle_proximity()
 	_check_door_proximity()
+	_check_window_knock_proximity()
 	_update_battery(delta)
 	_update_flashlight_visuals(delta)
 	_update_sanity(delta)

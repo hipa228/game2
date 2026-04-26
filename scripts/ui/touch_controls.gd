@@ -41,9 +41,19 @@ func _ready():
 	jump_button.pressed.connect(_on_jump_pressed)
 	crouch_button.pressed.connect(_on_crouch_pressed)
 	_style_buttons()
+	call_deferred("_make_buttons_square")
 
 	joystick_center = joystick_handle.position + joystick_handle.size / 2
 	joystick_handle.color = joystick_default_color
+
+func _make_buttons_square():
+	# Make buttons square for perfect circles
+	for btn in [crouch_button, jump_button, interact_button, flashlight_button]:
+		if not btn or not is_instance_valid(btn):
+			continue
+		var s = mini(int(btn.size.x), int(btn.size.y))
+		if s > 10:
+			btn.size = Vector2(s, s)
 
 func _is_on_button(touch_pos: Vector2) -> bool:
 	return (flashlight_button.get_global_rect().has_point(touch_pos)
@@ -141,30 +151,50 @@ func _style_buttons():
 	for btn in [flashlight_button, interact_button, jump_button, crouch_button]:
 		# Normal state - dark circle with subtle border
 		var normal = StyleBoxFlat.new()
-		normal.bg_color = Color(0, 0, 0, 0.35)
+		normal.bg_color = Color(0, 0, 0, 0.4)
 		normal.set_corner_radius_all(50)
 		normal.border_width_all = 2
-		normal.border_color = Color(1, 1, 1, 0.15)
+		normal.border_color = Color(1, 1, 1, 0.2)
 
 		# Hover state - slightly brighter
 		var hover = StyleBoxFlat.new()
-		hover.bg_color = Color(0, 0, 0, 0.45)
+		hover.bg_color = Color(0, 0, 0, 0.5)
 		hover.set_corner_radius_all(50)
 		hover.border_width_all = 2
-		hover.border_color = Color(1, 1, 1, 0.25)
+		hover.border_color = Color(1, 1, 1, 0.3)
 
 		# Pressed state - light background
 		var pressed = StyleBoxFlat.new()
-		pressed.bg_color = Color(1, 1, 1, 0.25)
+		pressed.bg_color = Color(1, 1, 1, 0.3)
 		pressed.set_corner_radius_all(50)
 		pressed.border_width_all = 2
-		pressed.border_color = Color(1, 1, 1, 0.4)
+		pressed.border_color = Color(1, 1, 1, 0.5)
 
 		btn.add_theme_stylebox_override("normal", normal)
 		btn.add_theme_stylebox_override("hover", hover)
 		btn.add_theme_stylebox_override("pressed", pressed)
+
 		btn.add_theme_font_size_override("font_size", 30)
 		btn.add_theme_color_override("font_color", Color(1, 1, 1, 0.9))
 		btn.add_theme_color_override("font_pressed_color", Color(0, 0, 0, 0.7))
 		btn.add_theme_constant_override("outline_size", 2)
 		btn.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.5))
+
+	# Style main buttons (crouch, jump) with a slightly different border
+	for btn in [crouch_button, jump_button]:
+		# Make the border more visible for main buttons
+		var normal = StyleBoxFlat.new()
+		normal.bg_color = Color(0, 0, 0, 0.4)
+		normal.set_corner_radius_all(50)
+		normal.border_width_all = 2
+		normal.border_color = Color(1, 1, 1, 0.3)
+
+		var pressed = StyleBoxFlat.new()
+		pressed.bg_color = Color(1, 1, 1, 0.3)
+		pressed.set_corner_radius_all(50)
+		pressed.border_width_all = 2
+		pressed.border_color = Color(1, 1, 1, 0.5)
+
+		btn.add_theme_stylebox_override("normal", normal)
+		btn.add_theme_stylebox_override("hover", normal)
+		btn.add_theme_stylebox_override("pressed", pressed)

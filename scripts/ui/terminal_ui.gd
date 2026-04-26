@@ -19,6 +19,7 @@ var terminal: Node = null
 @onready var color_hbox = $Panel/VBox/ColorHBox
 
 var color_btns: Array = []
+var last_pressed_btn: Button = null
 
 const INPUT_EMPTY := "○ ○ ○ ○"
 var current_number: int = 0
@@ -57,6 +58,44 @@ func _ready():
 	phase2_panel.hide()
 	current_number = MIN_NUMBER
 	number_display.text = str(current_number)
+	_style_buttons()
+
+func _style_buttons():
+	var color_pairs = [
+		[Color(1, 0.2, 0.15), red_btn],
+		[Color(0.15, 1, 0.3), green_btn],
+		[Color(0.2, 0.4, 1), blue_btn],
+		[Color(1, 0.9, 0.1), yellow_btn],
+	]
+	for pair in color_pairs:
+		var c = pair[0]
+		var btn = pair[1]
+		var normal = StyleBoxFlat.new()
+		normal.bg_color = Color(c.r * 0.15, c.g * 0.15, c.b * 0.15, 0.3)
+		normal.set_corner_radius_all(8)
+		normal.border_width_all = 1
+		normal.border_color = Color(c.r, c.g, c.b, 0.3)
+		var hover = StyleBoxFlat.new()
+		hover.bg_color = Color(c.r * 0.3, c.g * 0.3, c.b * 0.3, 0.5)
+		hover.set_corner_radius_all(8)
+		hover.border_width_all = 1
+		hover.border_color = Color(c.r, c.g, c.b, 0.6)
+		var pressed = StyleBoxFlat.new()
+		pressed.bg_color = Color(c.r * 0.5, c.g * 0.5, c.b * 0.5, 0.7)
+		pressed.set_corner_radius_all(8)
+		pressed.border_width_all = 1
+		pressed.border_color = Color(c.r, c.g, c.b, 0.9)
+		btn.add_theme_stylebox_override("normal", normal)
+		btn.add_theme_stylebox_override("hover", hover)
+		btn.add_theme_stylebox_override("pressed", pressed)
+
+	# Style for close button
+	var close_style = StyleBoxFlat.new()
+	close_style.bg_color = Color(0.1, 0.1, 0.12, 0.4)
+	close_style.set_corner_radius_all(6)
+	close_style.border_width_all = 1
+	close_style.border_color = Color(0.4, 0.4, 0.4, 0.2)
+	close_btn.add_theme_stylebox_override("normal", close_style)
 
 func set_phase2_mode(knocks_done: bool, _knock_count: int):
 	color_hbox.hide()
@@ -70,6 +109,9 @@ func set_phase2_mode(knocks_done: bool, _knock_count: int):
 		num_submit_btn.disabled = true
 
 func _on_color_pressed(color_idx: int):
+	last_pressed_btn = color_btns[color_idx]
+	# Instant green flash on press
+	last_pressed_btn.modulate = Color(0, 2, 0, 1)
 	if terminal and terminal.has_method(&"check_input"):
 		terminal.check_input(color_idx)
 
@@ -90,11 +132,23 @@ func _on_input_accepted(index: int):
 	for i in range(4 - index):
 		display.append("○")
 	input_display.text = " ".join(display)
+	# Flash last pressed button green
+	if last_pressed_btn and is_instance_valid(last_pressed_btn):
+		var tween = create_tween()
+		tween.tween_property(last_pressed_btn, "modulate", Color(0, 2, 0, 1), 0.05)
+		tween.tween_property(last_pressed_btn, "modulate", Color(1, 1, 1, 1), 0.4).set_ease(Tween.EASE_OUT)
+		last_pressed_btn = null
 
 func _on_input_rejected():
 	status_label.text = "Неверно! Жди следующей последовательности"
 	_disable_colors(true)
 	input_display.text = INPUT_EMPTY
+	# Flash last pressed button red
+	if last_pressed_btn and is_instance_valid(last_pressed_btn):
+		var tween = create_tween()
+		tween.tween_property(last_pressed_btn, "modulate", Color(2, 0, 0, 1), 0.05)
+		tween.tween_property(last_pressed_btn, "modulate", Color(1, 1, 1, 1), 0.4).set_ease(Tween.EASE_OUT)
+		last_pressed_btn = null
 
 func _on_solved():
 	status_label.text = "Фаза 1 пройдена! Готовься..."

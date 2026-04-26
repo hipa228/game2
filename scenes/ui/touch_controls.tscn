@@ -52,40 +52,42 @@ anchor_bottom = 1.0
 color = Color(1, 1, 1, 0.0)
 mouse_filter = 0
 
+; Main buttons - crouch and jump (bigger)
 [node name="CrouchButton" type="Button" parent="."]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.84
-anchor_top = 0.28
-anchor_right = 0.97
+anchor_left = 0.82
+anchor_top = 0.26
+anchor_right = 0.95
 anchor_bottom = 0.39
 text = ""
 
 [node name="JumpButton" type="Button" parent="."]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.84
-anchor_top = 0.42
-anchor_right = 0.97
-anchor_bottom = 0.53
+anchor_left = 0.82
+anchor_top = 0.44
+anchor_right = 0.95
+anchor_bottom = 0.57
 text = ""
 
+; Secondary buttons - interact and flashlight (smaller)
 [node name="InteractButton" type="Button" parent="."]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.84
-anchor_top = 0.56
-anchor_right = 0.97
-anchor_bottom = 0.67
+anchor_top = 0.61
+anchor_right = 0.95
+anchor_bottom = 0.72
 text = "✋"
 
 [node name="FlashlightButton" type="Button" parent="."]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.84
-anchor_top = 0.70
-anchor_right = 0.97
-anchor_bottom = 0.81
+anchor_top = 0.76
+anchor_right = 0.95
+anchor_bottom = 0.87
 text = "💡"
 
 [node name="ClockLabel" type="Label" parent="."]

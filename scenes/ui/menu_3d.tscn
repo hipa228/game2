@@ -1,9 +1,10 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/ui/menu_tv_static.gd" id="2"]
 [ext_resource type="Environment" path="res://scenes/environment/menu_environment.tres" id="3"]
 [ext_resource type="Script" path="res://scripts/ui/menu_static_overlay.gd" id="4"]
+[ext_resource type="Script" path="res://scripts/ui/menu_camera.gd" id="5"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_tv_body"]
 size = Vector3(2.2, 1.2, 0.1)
@@ -30,6 +31,7 @@ emission_energy = 1.0
 albedo_color = Color(0.05, 0.05, 0.05, 1)
 roughness = 0.5
 metallic = 0.3
+
 
 [node name="MenuUI" type="Control"]
 layout_mode = 3
@@ -65,6 +67,7 @@ transparent_bg = false
 [node name="Camera3D" type="Camera3D" parent="TVViewportContainer/Viewport"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0, 1.6, 3.0)
 current = true
+script = ExtResource("5")
 
 [node name="Room" type="Node3D" parent="TVViewportContainer/Viewport"]
 
@@ -110,71 +113,106 @@ mouse_filter = 2
 color = Color(0, 0, 0, 0)
 script = ExtResource("4")
 
-[node name="Title" type="Label" parent="."]
+[node name="TopBar" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 0.08
+color = Color(0, 0, 0, 0.5)
+mouse_filter = 2
+
+[node name="BottomBar" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_left = 0.0
+anchor_top = 0.92
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.5)
+mouse_filter = 2
+
+[node name="MenuItems" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 5
-anchor_left = 0.42
-anchor_top = 0.18
-anchor_right = 0.9
-anchor_bottom = 0.32
+anchor_left = 0.55
+anchor_top = 0.15
+anchor_right = 0.85
+anchor_bottom = 0.88
 grow_horizontal = 0
+
+[node name="Title" type="Label" parent="MenuItems"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.22
 theme_override_colors/font_color = Color(0.75, 0.1, 0.06, 1)
-theme_override_font_sizes/font_size = 54
+theme_override_font_sizes/font_size = 62
 horizontal_alignment = 0
 vertical_alignment = 1
-text = "Threshold"
+text = "PNASMOPIDOE"
 
-[node name="Subtitle" type="Label" parent="."]
+[node name="Subtitle" type="Label" parent="MenuItems"]
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.42
-anchor_top = 0.32
-anchor_right = 0.85
-anchor_bottom = 0.38
-grow_horizontal = 0
+anchors_preset = 6
+anchor_left = 0.0
+anchor_top = 0.2
+anchor_right = 1.0
+anchor_bottom = 0.28
 theme_override_colors/font_color = Color(0.5, 0.45, 0.4, 0.6)
 theme_override_font_sizes/font_size = 16
 horizontal_alignment = 0
-text = "Тьма за порогом"
+text = "Переживи ночь до 6 утра"
 
-[node name="StartButton" type="Button" parent="."]
+[node name="StartButton" type="Button" parent="MenuItems"]
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.42
-anchor_top = 0.48
-anchor_right = 0.67
-anchor_bottom = 0.55
-grow_horizontal = 0
-text = "Начать игру"
+anchors_preset = 6
+anchor_left = 0.0
+anchor_top = 0.36
+anchor_right = 0.55
+anchor_bottom = 0.44
 theme_override_font_sizes/font_size = 24
 theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
 theme_override_colors/font_hover_color = Color(1, 0.25, 0.12, 1)
+text = "Начать игру"
 
-[node name="SettingsButton" type="Button" parent="."]
+[node name="SettingsButton" type="Button" parent="MenuItems"]
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.42
-anchor_top = 0.57
-anchor_right = 0.64
-anchor_bottom = 0.63
-grow_horizontal = 0
-text = "Настройки"
+anchors_preset = 6
+anchor_left = 0.0
+anchor_top = 0.48
+anchor_right = 0.55
+anchor_bottom = 0.55
 theme_override_font_sizes/font_size = 20
 theme_override_colors/font_color = Color(0.55, 0.55, 0.6, 1)
 theme_override_colors/font_hover_color = Color(0.9, 0.2, 0.1, 1)
+text = "Настройки"
 
-[node name="QuitButton" type="Button" parent="."]
+[node name="QuitButton" type="Button" parent="MenuItems"]
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.42
-anchor_top = 0.66
-anchor_right = 0.58
-anchor_bottom = 0.71
-grow_horizontal = 0
-text = "Выйти"
+anchors_preset = 6
+anchor_left = 0.0
+anchor_top = 0.59
+anchor_right = 0.55
+anchor_bottom = 0.65
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.4, 0.4, 0.45, 1)
 theme_override_colors/font_hover_color = Color(0.8, 0.15, 0.08, 1)
+text = "Выйти"
+
+[node name="VersionLabel" type="Label" parent="MenuItems"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 0.0
+anchor_top = 0.85
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.3, 0.3, 0.35, 0.4)
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 0
+vertical_alignment = 2
+text = "v0.1 — 2026"
 
 [node name="SettingsPanel" type="Control" parent="."]
 layout_mode = 1
@@ -265,3 +303,11 @@ text = "Назад"
 theme_override_font_sizes/font_size = 22
 theme_override_colors/font_color = Color(0.8, 0.8, 0.85, 1)
 theme_override_colors/font_hover_color = Color(1, 0.25, 0.12, 1)
+
+[node name="FadeOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0)
+mouse_filter = 2

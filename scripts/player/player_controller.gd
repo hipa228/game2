@@ -8,6 +8,11 @@ extends CharacterBody3D
 @export var acceleration : float = 25.0
 @export var air_acceleration : float = 6.0
 @export var deceleration : float = 30.0
+@export var crouch_speed : float = 2.5
+
+# Crouch system
+var is_crouching : bool = false
+var head_normal_pos : Vector3
 
 # Battery system
 @export var battery_max : float = 100.0
@@ -63,6 +68,7 @@ var unhide_pos : Vector3
 var near_wardrobe : bool = false
 var near_terminal: bool = false
 var near_exit_door: bool = false
+var near_color_puzzle: bool = false
 var in_terminal_mode: bool = false
 
 # Furniture search cooldowns (node path -> seconds remaining)
@@ -91,6 +97,7 @@ func _ready():
 		flashlight_light.visible = flashlight_enabled
 
 		head_rest_pos = head.position
+	head_normal_pos = head.position
 
 func _setup_touch_controls():
 	var touch_nodes = get_tree().get_nodes_in_group("touch_controls")
@@ -104,8 +111,10 @@ func _setup_touch_controls():
 			touch_controls.flashlight_pressed.connect(_on_touch_flashlight)
 		if touch_controls.has_signal("interact_pressed"):
 			touch_controls.interact_pressed.connect(_on_interact)
-	if touch_controls.has_signal("jump_pressed"):
-		touch_controls.jump_pressed.connect(_on_touch_jump)
+		if touch_controls.has_signal("jump_pressed"):
+			touch_controls.jump_pressed.connect(_on_touch_jump)
+		if touch_controls.has_signal("crouch_pressed"):
+			touch_controls.crouch_pressed.connect(_on_touch_crouch)
 
 func _input(event):
 	if not camera or not head:
@@ -136,8 +145,10 @@ func _process(delta):
 		_update_hud()
 		return
 
-	is_sprinting = Input.is_action_pressed("sprint")
-	current_speed = sprint_speed if is_sprinting else speed
+
+
+	is_sprinting = Input.is_action_pressed("sprint") and not is_crouching
+	current_speed = crouch_speed if is_crouching else (sprint_speed if is_sprinting else speed)
 
 	if Input.is_action_just_pressed("flashlight"):
 		if not in_terminal_mode:
@@ -148,6 +159,7 @@ func _process(delta):
 
 	_check_wardrobe_proximity()
 	_check_terminal_proximity()
+	_check_color_puzzle_proximity()
 	_check_door_proximity()
 	_update_battery(delta)
 	_update_flashlight_visuals(delta)
@@ -162,11 +174,11 @@ func _process(delta):
 		var bob_amp = BOB_AMP_SPRINT if is_sprinting else BOB_AMP_WALK
 		bob_timer += delta * velocity_len * bob_freq
 		var bob_offset = sin(bob_timer) * bob_amp
-		head.position.y = head_rest_pos.y + bob_offset
+		head.position.y = head_rest_pos.y - (0.4 if is_crouching else 0.0) + bob_offset
 	else:
 		bob_timer = 0.0
 		# Smooth return to rest
-		head.position.y = lerp(head.position.y, head_rest_pos.y, delta * 10.0)
+		head.position.y = lerp(head.position.y, head_rest_pos.y - (0.4 if is_crouching else 0.0), delta * 10.0)
 
 
 	# Decrement search cooldowns
@@ -327,12 +339,35 @@ func _on_interact():
 	if has_key and near_exit_door:
 		_win_game()
 		return
+	if near_color_puzzle:
+		_interact_color_puzzle()
+		return
 	if is_hiding:
 		_toggle_hide()
 	elif near_wardrobe:
 		_toggle_hide()
 	else:
 		_try_search_furniture()
+
+func _interact_color_puzzle():
+	var puzzles = get_tree().get_nodes_in_group("color_puzzle")
+	for p in puzzles:
+		if not is_instance_valid(p) or not p.has_method("cycle_color"):
+			continue
+		# Find which glass is closest to the player's view direction
+		var closest = -1
+		var closest_dot = -1.0
+		var cam_fwd = -camera.global_transform.basis.z
+		for i in range(3):
+			var glass_pos = p.get_node("Glass" + str(i + 1)).global_position
+			var dir_to_glass = (glass_pos - camera.global_position).normalized()
+			var dot = cam_fwd.dot(dir_to_glass)
+			if dot > closest_dot:
+				closest_dot = dot
+				closest = i
+		if closest >= 0:
+			p.cycle_color(closest)
+		return
 
 func _open_terminal():
 	var terminals = get_tree().get_nodes_in_group("terminal")
@@ -369,6 +404,16 @@ func _check_door_proximity():
 			var dist = global_position.distance_to(area.global_position)
 			if dist < 2.0:
 				near_exit_door = true
+				return
+
+func _check_color_puzzle_proximity():
+	var puzzles = get_tree().get_nodes_in_group("color_puzzle")
+	near_color_puzzle = false
+	for p in puzzles:
+		if is_instance_valid(p):
+			var dist = global_position.distance_to(p.global_position)
+			if dist < 2.5:
+				near_color_puzzle = true
 				return
 
 func _update_hud():
@@ -481,6 +526,14 @@ func _on_touch_flashlight():
 func _on_touch_jump():
 	if not in_terminal_mode and is_on_floor():
 		velocity.y = jump_velocity
+
+func _on_touch_crouch():
+	if not in_terminal_mode and not is_hiding:
+		is_crouching = not is_crouching
+		# Snap head height immediately
+		var target_y = head_normal_pos.y - (0.4 if is_crouching else 0.0)
+		head.position.y = target_y
+		head_rest_pos.y = target_y
 
 func _win_game():
 	get_tree().change_scene_to_file("res://scenes/ui/win_screen.tscn")

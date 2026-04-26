@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="9d959bef-678a-4a55-9d49-2379d12b6ee1" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/android/build/AndroidManifest.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/local.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/export_presets.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/export_presets.cfg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project.godot" beforeDir="false" afterPath="$PROJECT_DIR$/project.godot" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/environment/dark_environment.tres" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/environment/dark_environment.tres" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/main/main.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/main/main.tscn" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/player/player.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/player/player.tscn" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/ui/touch_controls.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/ui/touch_controls.tscn" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/enemies/enemy_ai.gd" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/enemies/enemy_ai.gd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/game/game_manager.gd" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/game/game_manager.gd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/player/player_controller.gd" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/player/player_controller.gd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/ui/touch_controls.gd" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/ui/touch_controls.gd" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[LocalEmulator::path=/Users/hipa/.android/avd/Pixel_9_Pro_XL.avd]" />
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand />
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="3Bt9HRCQhpEsuHOs5sEZFAaB15E" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/hipa/src/game2"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9d959bef-678a-4a55-9d49-2379d12b6ee1" name="Changes" comment="" />
+      <created>1775297410767</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1775297410767</updated>
+    </task>
+    <servers />
+  </component>
+</project>

@@ -1,0 +1,224 @@
+extends CharacterBody3D
+
+# Player movement parameters
+@export var speed : float = 4.5
+@export var sprint_speed : float = 7.0
+@export var jump_velocity : float = 4.0
+@export var mouse_sensitivity : float = 0.03
+@export var acceleration : float = 18.0
+@export var air_acceleration : float = 4.0
+@export var deceleration : float = 25.0
+@export var coyote_time : float = 0.15
+@export var jump_buffer_time : float = 0.15
+
+# Get the gravity from the project settings to be synced with RigidBody nodes
+var gravity : float = ProjectSettings.get_setting("physics/3d/default_gravity")
+var gravity_scale : float = 1.5
+var current_speed : float = speed
+var is_sprinting : bool = false
+
+# Camera nodes
+@onready var camera : Camera3D = $Head/Camera3D
+@onready var head : Node3D = $Head
+
+# Flashlight
+@onready var flashlight_light : SpotLight3D = $Head/FlashlightLight
+var flashlight_enabled : bool = true
+
+# Touch controls for Android
+var touch_delta : Vector2 = Vector2.ZERO
+var move_input : Vector2 = Vector2.ZERO
+var touch_controls: Node = null
+
+# Debug
+var frame_count : int = 0
+
+func _ready():
+	# Hide mouse cursor and capture it
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+	print("[PLAYER] Player _ready() called")
+	print("[PLAYER] Player position: ", global_position)
+	print("[PLAYER] Player collision_layer: ", collision_layer)
+	print("[PLAYER] Player collision_mask: ", collision_mask)
+	print("[PLAYER] Gravity: ", gravity)
+
+	# Connect to touch events for Android
+	if OS.has_feature("android"):
+		_setup_touch_controls()
+		print("[PLAYER] Android build - checking rendering settings")
+		print("[PLAYER] Rendering method: ", ProjectSettings.get_setting("rendering/renderer/rendering_method"))
+		print("[PLAYER] Graphics API: ", ProjectSettings.get_setting("graphics/api"))
+
+		# Check floor collision
+		var floor_node = get_parent().get_node_or_null("Floor")
+		if floor_node:
+			print("[PLAYER] Floor found: ", floor_node.name)
+			if floor_node is StaticBody3D:
+				print("[PLAYER] Floor collision_layer: ", floor_node.collision_layer)
+				print("[PLAYER] Floor collision_mask: ", floor_node.collision_mask)
+		else:
+			print("[PLAYER] Floor node not found!")
+
+	# Initialize flashlight
+	if flashlight_light:
+		flashlight_light.visible = flashlight_enabled
+	if flashlight_model:
+		flashlight_model.visible = flashlight_enabled
+
+func _setup_touch_controls():
+	# Find touch controls in scene
+	var touch_nodes = get_tree().get_nodes_in_group("touch_controls")
+	print("[PLAYER] Touch nodes found: ", touch_nodes.size())
+	if touch_nodes.size() > 0:
+		touch_controls = touch_nodes[0]
+		print("[PLAYER] Touch controls node: ", touch_controls.name)
+		if touch_controls.has_signal("move_input_changed"):
+			touch_controls.move_input_changed.connect(set_move_input)
+		if touch_controls.has_signal("look_delta_changed"):
+			touch_controls.look_delta_changed.connect(set_look_delta)
+		if touch_controls.has_signal("jump_pressed"):
+			touch_controls.jump_pressed.connect(_on_touch_jump)
+		if touch_controls.has_signal("sprint_pressed"):
+			touch_controls.sprint_pressed.connect(_on_touch_sprint)
+		if touch_controls.has_signal("flashlight_pressed"):
+			touch_controls.flashlight_pressed.connect(_on_touch_flashlight)
+
+func _input(event):
+	if not camera or not head:
+		return
+
+	# Mouse look for desktop
+	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+		head.rotate_y(-event.relative.x * mouse_sensitivity)
+		camera.rotate_x(-event.relative.y * mouse_sensitivity)
+		camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-90), deg_to_rad(90))
+
+	# Touch input for Android - only handle if touch controls not available
+	if OS.has_feature("android") and event is InputEventScreenDrag and touch_controls == null:
+		# Right side of screen for looking
+		if event.position.x > get_viewport().size.x * 0.5:
+			head.rotate_y(-event.relative.x * mouse_sensitivity * 0.5)
+			camera.rotate_x(-event.relative.y * mouse_sensitivity * 0.5)
+			camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-90), deg_to_rad(90))
+
+	# Escape key to show/hide mouse
+	if event.is_action_pressed("ui_cancel"):
+		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		else:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+func _process(_delta):
+	# Handle sprint input
+	is_sprinting = Input.is_action_pressed("sprint")
+	current_speed = sprint_speed if is_sprinting else speed
+
+	# Handle flashlight toggle
+	if Input.is_action_just_pressed("flashlight"):
+		toggle_flashlight()
+
+	# Update HUD (if any)
+	_update_hud()
+
+func _update_hud():
+	# Update speed indicator, health, etc.
+	pass
+
+func _physics_process(delta):
+	frame_count += 1
+	if frame_count % 60 == 0:
+		print("[PLAYER] Player frame ", frame_count, " position: ", global_position, " is_on_floor: ", is_on_floor(), " velocity: ", velocity)
+
+	# Add the gravity
+	if not is_on_floor():
+		velocity.y -= gravity * gravity_scale * delta
+
+	# Handle jump
+	if Input.is_action_just_pressed("jump") and is_on_floor():
+		velocity.y = jump_velocity
+
+	# Get input direction
+	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+
+	# For Android touch controls, blend with touch input
+	if OS.has_feature("android"):
+		input_dir = input_dir + move_input
+		input_dir = input_dir.limit_length(1.0)
+
+	# Transform input direction to world space
+	var direction := (head.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+
+	# Apply movement
+	if direction:
+		var target_velocity = direction * current_speed
+		var accel = acceleration if is_on_floor() else air_acceleration
+		velocity.x = lerp(velocity.x, target_velocity.x, accel * delta)
+		velocity.z = lerp(velocity.z, target_velocity.z, accel * delta)
+	else:
+		# Apply friction when no input
+		var friction = deceleration if is_on_floor() else air_acceleration
+		velocity.x = lerp(velocity.x, 0.0, friction * delta)
+		velocity.z = lerp(velocity.z, 0.0, friction * delta)
+
+	move_and_slide()
+	var collision_count = get_slide_collision_count()
+	if collision_count > 0:
+		print("[PLAYER] Collisions detected: ", collision_count)
+		for i in collision_count:
+			var collision = get_slide_collision(i)
+			print("[PLAYER] Collision ", i, " with: ", collision.get_collider(), " normal: ", collision.get_normal())
+	if OS.has_feature("android") and (velocity.x != 0 or velocity.z != 0):
+		print("[PLAYER] Player moving: ", velocity)
+	print("[PLAYER] is_on_floor: ", is_on_floor(), " velocity.y: ", velocity.y)
+
+	# Footstep sounds (placeholder)
+	if is_on_floor() and (velocity.x != 0 or velocity.z != 0):
+		_play_footstep_sound(delta)
+
+func _play_footstep_sound(delta):
+	# Implement footstep sound timing
+	pass
+
+func take_damage(amount: float):
+	# Implement health system
+	pass
+
+func die():
+	# Implement death sequence
+	get_tree().reload_current_scene()
+
+# Public method for touch controls
+func set_move_input(input: Vector2):
+	print("[PLAYER] Move input received: ", input)
+	move_input = input
+
+func set_look_delta(delta: Vector2):
+	if not camera or not head:
+		return
+	if delta.length() > 0:
+		head.rotate_y(-delta.x * mouse_sensitivity)
+		camera.rotate_x(-delta.y * mouse_sensitivity)
+		camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-90), deg_to_rad(90))
+
+func _on_touch_jump():
+	# Simulate jump input for next physics frame
+	Input.action_press("jump")
+	await get_tree().create_timer(0.1).timeout
+	Input.action_release("jump")
+
+func _on_touch_sprint():
+	is_sprinting = true
+
+func toggle_flashlight():
+	if not flashlight_light:
+		return
+	flashlight_enabled = !flashlight_enabled
+	flashlight_light.visible = flashlight_enabled
+	if flashlight_model:
+		flashlight_model.visible = flashlight_enabled
+	print("[PLAYER] Flashlight ", "enabled" if flashlight_enabled else "disabled")
+
+func _on_touch_flashlight():
+	toggle_flashlight()
+

@@ -1,0 +1,11 @@
+res://scenes/environment/dark_environment.tres::66ad27c5ee048c52e557625ff209ce8e::1777196024::res://.godot/exported/133200997/export-2b8ea1ac8dd0a3fba20b24ea07b5be43-dark_environment.res
+res://scenes/ui/touch_controls.tscn::4595f20f9eaabfb072884a8d72cb8e3c::1777196541::res://.godot/exported/133200997/export-f5e841e06826140c3bf6142c33379ad9-touch_controls.scn
+res://scenes/player/player.tscn::3d3c11b07b16fee7594d4e4dc1f918d6::1777196079::res://.godot/exported/133200997/export-c2c62cb8c73458cd122faf659769dc80-player.scn
+res://scenes/ui/win_screen.tscn::3ef7289e6c27b477e33c54d7ff40b378::1777144342::res://.godot/exported/133200997/export-5aea99a1428ce88fb5191cbe4a892a96-win_screen.scn
+res://scenes/ui/main_menu.tscn::7099c7090252dd6e6a69b51133a870d5::1777194570::res://.godot/exported/133200997/export-79dd3ab530fc0aed4f9ba21f09ab2efd-main_menu.scn
+res://scenes/environment/menu_environment.tres::93c2f9587a3c4c141f45638319347747::1777145028::res://.godot/exported/133200997/export-cad5865a020c9fdeee1191976ffac216-menu_environment.res
+res://scenes/ui/terminal_ui.tscn::52aa1e43c731f62869f668da586f80bc::1777195667::res://.godot/exported/133200997/export-230ab82748c456c1b66ad609dd75c1d6-terminal_ui.scn
+res://scenes/main/main.tscn::bcd1e5c3acd8c85b162e460dda6d359e::1777196308::res://.godot/exported/133200997/export-f39996a6d27a38698d16421ab974097b-main.scn
+res://scenes/furniture/terminal.tscn::9dc3f898b9a0d8b1e8d7bd0658265993::1777194758::res://.godot/exported/133200997/export-de874ad340904558ef1388ab3ed7e9f7-terminal.scn
+res://scenes/ui/menu_3d.tscn::2f801ee4f00e07541c31e159651173d1::1777195433::res://.godot/exported/133200997/export-aa3b80cdaad37eee8228595950067335-menu_3d.scn
+res://scenes/furniture/color_puzzle.tscn::ce001a067518d63744cbb8f3a5c9a8d0::1777196296::res://.godot/exported/133200997/export-c5429e53cdabf297c7c3c801a682a705-color_puzzle.scn

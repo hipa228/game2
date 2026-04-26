@@ -5,6 +5,7 @@ signal look_delta_changed(delta: Vector2)
 signal flashlight_pressed
 signal interact_pressed
 signal jump_pressed
+signal crouch_pressed
 
 # Configuration
 @export var deadzone_radius : float = 10.0
@@ -16,6 +17,7 @@ signal jump_pressed
 @onready var flashlight_button := $FlashlightButton
 @onready var interact_button := $InteractButton
 @onready var jump_button := $JumpButton
+@onready var crouch_button := $CrouchButton
 @onready var battery_fill := $BatteryBar/BatteryFill
 @onready var clock_label := $ClockLabel
 
@@ -37,6 +39,7 @@ func _ready():
 	flashlight_button.pressed.connect(_on_flashlight_pressed)
 	interact_button.pressed.connect(_on_interact_pressed)
 	jump_button.pressed.connect(_on_jump_pressed)
+	crouch_button.pressed.connect(_on_crouch_pressed)
 	_style_buttons()
 
 	joystick_center = joystick_handle.position + joystick_handle.size / 2
@@ -46,6 +49,7 @@ func _is_on_button(touch_pos: Vector2) -> bool:
 	return flashlight_button.get_global_rect().has_point(touch_pos) \
 		or interact_button.get_global_rect().has_point(touch_pos) \
 		or jump_button.get_global_rect().has_point(touch_pos)
+	or crouch_button.get_global_rect().has_point(touch_pos)
 
 func _input(event):
 	if event is InputEventScreenTouch:
@@ -130,8 +134,11 @@ func _on_interact_pressed():
 func _on_jump_pressed():
 	jump_pressed.emit()
 
+func _on_crouch_pressed():
+	crouch_pressed.emit()
+
 func _style_buttons():
-	for btn in [flashlight_button, interact_button, jump_button]:
+	for btn in [flashlight_button, interact_button, jump_button, crouch_button]:
 		var normal = StyleBoxFlat.new()
 		normal.bg_color = Color(1, 1, 1, 0.12)
 		normal.set_corner_radius_all(50)

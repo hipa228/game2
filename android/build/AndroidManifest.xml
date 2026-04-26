@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.horrorgame3d">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/icon"
+        android:isGame="true"
+        android:hasCode="false"
+        android:label="Horror Game 3D">
+        <activity android:name="com.godot.game.GodotApp"
+            android:launchMode="singleTask"
+            android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
+            android:screenOrientation="landscape"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <meta-data android:name="android.app.lib_name" android:value="godot" />
+        </activity>
+    </application>
+
+</manifest>

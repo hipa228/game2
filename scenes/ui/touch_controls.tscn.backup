@@ -1,0 +1,81 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/touch_controls.gd" id="1_8j0kl"]
+
+[node name="TouchControls" type="Control" groups=["touch_controls"]]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_8j0kl")
+
+[node name="LeftJoystick" type="Control" parent="."]
+layout_mode = 1
+visible = true
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.75
+anchor_right = 0.13
+anchor_bottom = 0.87
+mouse_filter = 2
+
+[node name="JoystickBackground" type="ColorRect" parent="LeftJoystick"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0.02)
+
+[node name="JoystickHandle" type="ColorRect" parent="LeftJoystick"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.45
+anchor_top = 0.45
+anchor_right = 0.55
+anchor_bottom = 0.55
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0.2)
+
+[node name="RightTouchArea" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.7
+anchor_top = 0.2
+anchor_right = 1.0
+anchor_bottom = 0.8
+color = Color(1, 1, 1, 0.0392157)
+mouse_filter = 0
+
+[node name="JumpButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.90
+anchor_top = 0.55
+anchor_right = 0.96
+anchor_bottom = 0.60
+text = "Jump"
+
+[node name="SprintButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.70
+anchor_top = 0.50
+anchor_right = 0.76
+anchor_bottom = 0.55
+text = "Sprint"
+
+[node name="FlashlightButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.80
+anchor_top = 0.65
+anchor_right = 0.86
+anchor_bottom = 0.70
+text = "Flash"
+

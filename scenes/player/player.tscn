@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=22 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1_6s4gf"]
 
@@ -10,12 +10,90 @@ height = 2.0
 radius = 0.5
 height = 2.0
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
+albedo_color = Color(0.12, 0.12, 0.13, 1)
+roughness = 0.25
+metallic = 0.85
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_grip"]
+albedo_color = Color(0.14, 0.14, 0.15, 1)
+roughness = 0.55
+metallic = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bezel"]
+albedo_color = Color(0.06, 0.06, 0.07, 1)
+roughness = 0.08
+metallic = 0.9
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lens"]
+albedo_color = Color(0.4, 0.5, 0.8, 0.35)
+roughness = 0.02
+metallic = 0.0
+transparency = 1
+emission_enabled = true
+emission = Color(0.08, 0.12, 0.25, 1)
+emission_energy = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_button"]
+albedo_color = Color(0.7, 0.05, 0.05, 1)
+roughness = 0.3
+metallic = 0.3
+emission_enabled = true
+emission = Color(0.3, 0.02, 0.02, 1)
+emission_energy = 0.5
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_body_main"]
+top_radius = 0.018
+bottom_radius = 0.018
+height = 0.06
+radial_segments = 16
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_body_tail"]
+top_radius = 0.022
+bottom_radius = 0.022
+height = 0.02
+radial_segments = 16
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_grip_ring"]
+top_radius = 0.021
+bottom_radius = 0.021
+height = 0.006
+radial_segments = 16
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_bezel"]
+top_radius = 0.024
+bottom_radius = 0.024
+height = 0.025
+radial_segments = 16
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_bezel_ring"]
+top_radius = 0.026
+bottom_radius = 0.026
+height = 0.004
+radial_segments = 16
+
+[sub_resource type="BoxMesh" id="BoxMesh_button"]
+size = Vector3(0.008, 0.008, 0.01)
+
+[sub_resource type="SphereMesh" id="SphereMesh_lens"]
+radius = 0.02
+height = 0.06
+radial_segments = 16
+rings = 8
+
 [node name="Player" type="CharacterBody3D" groups=["player"]]
 script = ExtResource("1_6s4gf")
-speed = 5.0
-sprint_speed = 8.0
-jump_velocity = 4.5
-mouse_sensitivity = 0.002
+speed = 4.5
+sprint_speed = 7.0
+jump_velocity = 4.0
+mouse_sensitivity = 0.003
+safe_margin = 0.2
+continuous_cd = true
+floor_stop_on_slope = true
+floor_constant_speed = false
+floor_block_on_wall = true
+up_direction = Vector3(0, 1, 0)
+collision_mask = 1
 
 [node name="Head" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -25,6 +103,54 @@ current = true
 fov = 70.0
 near = 0.05
 far = 1000.0
+
+[node name="FlashlightLight" type="SpotLight3D" parent="Head/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, -0.15, -0.35)
+light_energy = 6.0
+light_color = Color(0.9, 0.95, 1.0, 1)
+spot_range = 20.0
+spot_angle = 35.0
+shadow_enabled = false
+
+[node name="FlashlightLens" type="MeshInstance3D" parent="Head/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, -0.15, -0.34)
+mesh = SubResource("SphereMesh_lens")
+material_override = SubResource("StandardMaterial3D_lens")
+
+[node name="FlashlightBezel" type="MeshInstance3D" parent="Head/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.15, -0.15, -0.3275)
+mesh = SubResource("CylinderMesh_bezel")
+material_override = SubResource("StandardMaterial3D_bezel")
+
+[node name="FlashlightBezelRing" type="MeshInstance3D" parent="Head/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.15, -0.15, -0.315)
+mesh = SubResource("CylinderMesh_bezel_ring")
+material_override = SubResource("StandardMaterial3D_bezel")
+
+[node name="FlashlightBodyMain" type="MeshInstance3D" parent="Head/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.15, -0.15, -0.275)
+mesh = SubResource("CylinderMesh_body_main")
+material_override = SubResource("StandardMaterial3D_body")
+
+[node name="FlashlightGripBack" type="MeshInstance3D" parent="Head/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.15, -0.15, -0.253)
+mesh = SubResource("CylinderMesh_grip_ring")
+material_override = SubResource("StandardMaterial3D_grip")
+
+[node name="FlashlightGripFront" type="MeshInstance3D" parent="Head/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.15, -0.15, -0.297)
+mesh = SubResource("CylinderMesh_grip_ring")
+material_override = SubResource("StandardMaterial3D_grip")
+
+[node name="FlashlightTail" type="MeshInstance3D" parent="Head/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.15, -0.15, -0.24)
+mesh = SubResource("CylinderMesh_body_tail")
+material_override = SubResource("StandardMaterial3D_body")
+
+[node name="FlashlightButton" type="MeshInstance3D" parent="Head/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, -0.138, -0.275)
+mesh = SubResource("BoxMesh_button")
+material_override = SubResource("StandardMaterial3D_button")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_8o5xc")

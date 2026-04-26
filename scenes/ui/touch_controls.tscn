@@ -12,68 +12,104 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_8j0kl")
 
-[node name="LeftJoystick" type="Control" parent="."]
+[node name="Joystick" type="Control" parent="."]
 layout_mode = 1
+visible = true
 anchors_preset = -1
-anchor_left = 0.05
-anchor_top = 0.7
-anchor_right = 0.25
-anchor_bottom = 0.9
+anchor_left = 0.02
+anchor_top = 0.6
+anchor_right = 0.22
+anchor_bottom = 0.92
 mouse_filter = 2
 
-[node name="JoystickBackground" type="ColorRect" parent="LeftJoystick"]
+[node name="JoystickBackground" type="ColorRect" parent="Joystick"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(1, 1, 1, 0.156863)
+color = Color(1, 1, 1, 0.02)
 
-[node name="JoystickHandle" type="ColorRect" parent="LeftJoystick"]
+[node name="JoystickHandle" type="ColorRect" parent="Joystick"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.35
-anchor_top = 0.35
-anchor_right = 0.65
-anchor_bottom = 0.65
+anchor_left = 0.45
+anchor_top = 0.45
+anchor_right = 0.55
+anchor_bottom = 0.55
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(1, 1, 1, 0.392157)
+color = Color(1, 1, 1, 0.2)
 
-[node name="RightTouchArea" type="ColorRect" parent="."]
+[node name="LookArea" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.5
+anchor_left = 0.3
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(1, 1, 1, 0.0392157)
+color = Color(1, 1, 1, 0.0)
 mouse_filter = 0
 
-[node name="JumpButton" type="Button" parent="."]
+[node name="FlashlightButton" type="Button" parent="."]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.85
-anchor_top = 0.5
+anchor_left = 0.8
+anchor_top = 0.72
 anchor_right = 0.95
-anchor_bottom = 0.6
-text = "Jump"
-
-[node name="SprintButton" type="Button" parent="."]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.7
-anchor_top = 0.5
-anchor_right = 0.8
-anchor_bottom = 0.6
-text = "Sprint"
+anchor_bottom = 0.88
+text = "🔦"
+theme_override_font_sizes/font_size = 30
 
 [node name="InteractButton" type="Button" parent="."]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.85
-anchor_top = 0.35
+anchor_left = 0.8
+anchor_top = 0.54
 anchor_right = 0.95
-anchor_bottom = 0.45
-text = "Interact"
+anchor_bottom = 0.7
+text = "⬆"
+theme_override_font_sizes/font_size = 30
+
+[node name="JumpButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.8
+anchor_top = 0.36
+anchor_right = 0.95
+anchor_bottom = 0.52
+text = "⤊"
+theme_override_font_sizes/font_size = 30
+
+[node name="ClockLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.35
+anchor_top = 0.01
+anchor_right = 0.65
+anchor_bottom = 0.07
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.8)
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+text = "23:00"
+
+[node name="BatteryBar" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.02
+anchor_top = 0.03
+anchor_right = 0.22
+anchor_bottom = 0.06
+color = Color(0, 0, 0, 0.5)
+mouse_filter = 2
+
+[node name="BatteryFill" type="ColorRect" parent="BatteryBar"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.02
+anchor_top = 0.05
+anchor_right = 0.96
+anchor_bottom = 0.9
+color = Color(0.2, 0.8, 0.2, 1)

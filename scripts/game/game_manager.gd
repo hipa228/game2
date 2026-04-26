@@ -3,13 +3,16 @@ extends Node
 signal game_started
 signal game_paused
 signal game_resumed
-signal game_over
+signal game_finished
 signal score_changed(new_score: int)
 
-var score : int = 0:
+var _score: int = 0
+var score: int:
+	get:
+		return _score
 	set(value):
-		score = value
-		score_changed.emit(score)
+		_score = value
+		score_changed.emit(_score)
 
 var is_game_paused : bool = false
 var player_health : float = 100.0
@@ -18,6 +21,7 @@ var current_level : String = ""
 var player_instance : Node = null
 
 func _ready():
+	print("[GAME] GameManager _ready() called")
 	# Load saved data
 	_load_game_data()
 	# Connect to scene change
@@ -39,8 +43,8 @@ func resume_game():
 		is_game_paused = false
 		game_resumed.emit()
 
-func game_over():
-	game_over.emit()
+func end_game():
+	game_finished.emit()
 	_save_game_data()
 
 func add_points(points: int):
@@ -49,7 +53,7 @@ func add_points(points: int):
 func take_damage(amount: float):
 	player_health = max(0, player_health - amount)
 	if player_health <= 0:
-		game_over()
+		end_game()
 
 func heal(amount: float):
 	player_health = min(player_max_health, player_health + amount)

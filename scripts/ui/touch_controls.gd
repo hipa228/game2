@@ -2,76 +2,150 @@ extends Control
 
 signal move_input_changed(direction: Vector2)
 signal look_delta_changed(delta: Vector2)
-signal jump_pressed
-signal sprint_pressed
+signal flashlight_pressed
 signal interact_pressed
+signal jump_pressed
 
-@onready var left_joystick := $LeftJoystick
-@onready var right_touch_area := $RightTouchArea
-@onready var jump_button := $JumpButton
-@onready var sprint_button := $SprintButton
+# Configuration
+@export var deadzone_radius : float = 10.0
+@export var look_sensitivity : float = 1.0
+
+@onready var joystick := $Joystick
+@onready var joystick_handle := $Joystick/JoystickHandle
+@onready var look_area := $LookArea
+@onready var flashlight_button := $FlashlightButton
 @onready var interact_button := $InteractButton
+@onready var jump_button := $JumpButton
+@onready var battery_fill := $BatteryBar/BatteryFill
+@onready var clock_label := $ClockLabel
 
-var right_touch_index := -1
-var right_touch_start := Vector2.ZERO
+var joystick_active := false
+var joystick_touch_index : int = -1
+var joystick_center := Vector2.ZERO
+var joystick_max_distance := 120.0
+var joystick_default_color := Color(1, 1, 1, 0.2)
+var joystick_active_color := Color(0.8, 0.8, 1.0, 0.4)
+
+var look_touch_index : int = -1
+var look_touch_start : Vector2 = Vector2.ZERO
 
 func _ready():
-	# Only show on Android
-	if not OS.has_feature("android"):
+	if not OS.has_feature("android") and not OS.has_feature("mobile"):
 		visible = false
 		return
 
-	# Connect button signals
-	jump_button.pressed.connect(_on_jump_pressed)
-	sprint_button.pressed.connect(_on_sprint_pressed)
+	flashlight_button.pressed.connect(_on_flashlight_pressed)
 	interact_button.pressed.connect(_on_interact_pressed)
+	jump_button.pressed.connect(_on_jump_pressed)
+	_style_buttons()
 
-	# Connect joystick signal
-	left_joystick.position_changed.connect(_on_left_joystick_changed)
+	joystick_center = joystick_handle.position + joystick_handle.size / 2
+	joystick_handle.color = joystick_default_color
+
+func _is_on_button(touch_pos: Vector2) -> bool:
+	return flashlight_button.get_global_rect().has_point(touch_pos) \
+		or interact_button.get_global_rect().has_point(touch_pos) \
+		or jump_button.get_global_rect().has_point(touch_pos)
 
 func _input(event):
-	if not OS.has_feature("android"):
-		return
-
 	if event is InputEventScreenTouch:
-		_handle_touch_event(event)
+		if event.pressed:
+			# Touch-down: activate joystick or look area by position
+			if joystick.get_global_rect().has_point(event.position):
+				if joystick_touch_index == -1:
+					joystick_active = true
+					joystick_touch_index = event.index
+					_update_joystick(event.position)
+			elif look_area.get_global_rect().has_point(event.position) \
+			and not _is_on_button(event.position) \
+			and event.index != joystick_touch_index:
+				if look_touch_index == -1:
+					look_touch_index = event.index
+					look_touch_start = event.position
+		else:
+			# Touch-up: release by finger index, not position
+			if event.index == joystick_touch_index:
+				joystick_active = false
+				joystick_touch_index = -1
+				_reset_joystick()
+			if event.index == look_touch_index:
+				look_touch_index = -1
+				look_delta_changed.emit(Vector2.ZERO)
+
 	elif event is InputEventScreenDrag:
-		_handle_drag_event(event)
+		if joystick_active and event.index == joystick_touch_index:
+			_update_joystick(event.position)
 
-func _handle_touch_event(event: InputEventScreenTouch):
-	# Right touch area for looking
-	if right_touch_area.get_global_rect().has_point(event.position):
-		if event.pressed and right_touch_index == -1:
-			right_touch_index = event.index
-			right_touch_start = event.position
-		elif not event.pressed and event.index == right_touch_index:
-			right_touch_index = -1
-			look_delta_changed.emit(Vector2.ZERO)
+		if event.index == look_touch_index and not _is_on_button(event.position):
+			var delta = event.position - look_touch_start
+			look_touch_start = event.position
+			if delta.length() > 2.0:
+				look_delta_changed.emit(delta * look_sensitivity * 0.005)
 
-func _handle_drag_event(event: InputEventScreenDrag):
-	if event.index == right_touch_index:
-		var delta = event.position - right_touch_start
-		right_touch_start = event.position
-		look_delta_changed.emit(delta * 0.01)
+func _update_joystick(touch_pos: Vector2):
+	var local_pos = touch_pos - joystick.global_position
+	var direction = (local_pos - joystick_center)
 
-func _on_left_joystick_changed(position: Vector2):
-	move_input_changed.emit(position)
+	if direction.length() > joystick_max_distance:
+		direction = direction.normalized() * joystick_max_distance
 
-func _on_jump_pressed():
-	jump_pressed.emit()
+	joystick_handle.position = joystick_center + direction - (joystick_handle.size / 2)
+	joystick_handle.color = joystick_active_color
 
-func _on_sprint_pressed():
-	sprint_pressed.emit()
+	# Apply deadzone to input
+	var input_vec = Vector2.ZERO
+	var distance = direction.length()
+	if distance > deadzone_radius:
+		var scaled_distance = (distance - deadzone_radius) / (joystick_max_distance - deadzone_radius)
+		input_vec = direction.normalized() * scaled_distance
+	move_input_changed.emit(Vector2(input_vec.x, input_vec.y))
+
+func _reset_joystick():
+	joystick_handle.position = joystick_center - (joystick_handle.size / 2)
+	joystick_handle.color = joystick_default_color
+	move_input_changed.emit(Vector2.ZERO)
+
+func set_battery(percent: float):
+	if not battery_fill:
+		return
+	battery_fill.anchor_right = 0.02 + 0.94 * percent
+	if percent > 0.5:
+		battery_fill.color = Color(0.2, 0.9, 0.2, 1)
+	elif percent > 0.25:
+		battery_fill.color = Color(0.9, 0.8, 0.1, 1)
+	else:
+		battery_fill.color = Color(0.9, 0.2, 0.1, 1)
+
+func set_time(hour: int, minute: int):
+	if not clock_label:
+		return
+	clock_label.text = "%02d:%02d" % [hour, minute]
+
+func _on_flashlight_pressed():
+	flashlight_pressed.emit()
 
 func _on_interact_pressed():
 	interact_pressed.emit()
 
-func _on_sprint_button_released():
-	# Sprint is toggle or hold? We'll implement as hold
-	pass
+func _on_jump_pressed():
+	jump_pressed.emit()
 
-# Public methods to update button visibility
-func set_button_visibility(jump: bool, sprint: bool, interact: bool):
-	jump_button.visible = jump
-	sprint_button.visible = sprint
-	interact_button.visible = interact
+func _style_buttons():
+	for btn in [flashlight_button, interact_button, jump_button]:
+		var normal = StyleBoxFlat.new()
+		normal.bg_color = Color(1, 1, 1, 0.12)
+		normal.set_corner_radius_all(50)
+		normal.border_width_bottom = 0
+		normal.border_width_top = 0
+		normal.border_width_left = 0
+		normal.border_width_right = 0
+
+		var pressed = StyleBoxFlat.new()
+		pressed.bg_color = Color(1, 1, 1, 0.3)
+		pressed.set_corner_radius_all(50)
+
+		btn.add_theme_stylebox_override("normal", normal)
+		btn.add_theme_stylebox_override("hover", normal)
+		btn.add_theme_stylebox_override("pressed", pressed)
+		btn.add_theme_font_size_override("font_size", 26)
+		btn.add_theme_color_override("font_color", Color(1, 1, 1, 0.85))
